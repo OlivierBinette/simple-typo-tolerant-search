@@ -5,7 +5,7 @@ How many lines of code to implement a typo-tolerant search engine in Python, wit
 Here's how it works:
 1. Tokenize documents.
 2. Create an [inverted index](https://en.wikipedia.org/wiki/Inverted_index) to quickly lookup documents from terms.
-3. Combine a [trie](https://en.wikipedia.org/wiki/Trie) with a Levenshtein automaton for typo-tolerant search with optimal time complexity O(`#terms` x `max_levenshtein_distance`).
+3. Combine a [trie](https://en.wikipedia.org/wiki/Trie) with an adaptation of the usual Levenshtein distance algorithm for typo-tolerant search with optimal time complexity O(`#terms` x `max_levenshtein_distance`).
 
 At the core of this is the algorithm for fuzzy searching the trie, a variation of the algorithm to compute the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). 
 It's a depth first search of the trie. At each node, we associate a vector `dists` such that `dist[i]` is the Levenshtein distance between `query[:i]` and the word represented by the current node. 
