@@ -7,7 +7,7 @@ Here's how it works:
 2. Create an [inverted index](https://en.wikipedia.org/wiki/Inverted_index) to quickly lookup documents from terms.
 3. Combine a [trie](https://en.wikipedia.org/wiki/Trie) with an adaptation of the usual Levenshtein distance algorithm for typo-tolerant search with optimal time complexity O(`#terms` x `max_levenshtein_distance`).
 
-At the core of this is the algorithm for fuzzy searching the trie, a variation of the algorithm to compute the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). 
+At the core of this implementation is the algorithm for fuzzy searching the trie, which is a variation of the algorithm used to compute the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). 
 It's a depth first search of the trie. We associate to each node a vector `dists` such that `dist[i]` represents the Levenshtein distance between `query[:i]` and the word represented by the current node.
 By capping the maximum Levenshtein distance at `n`, this computation can be performed in `2*n+1` time by leveraging the parent node's `dists` vector.
 Furthermore, the `dists` vector allows for both (1) determining the Levenshtein distance between the query and the current word, and (2) checking whether or not descendants of the current node could potentially match.
