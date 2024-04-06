@@ -8,10 +8,10 @@ Here's how it works:
 3. Combine a [trie](https://en.wikipedia.org/wiki/Trie) with an adaptation of the usual Levenshtein distance algorithm for typo-tolerant search with optimal time complexity O(`#terms` x `max_levenshtein_distance`).
 
 At the core of this is the algorithm for fuzzy searching the trie, a variation of the algorithm to compute the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). 
-It's a depth first search of the trie. At each node, we associate a vector `dists` such that `dist[i]` is the Levenshtein distance between `query[:i]` and the word represented by the current node. 
-Capping at the max levenshtein distance `n`, this can be computed in time `2*n+1` by using the parent's own `dists` vector that was stored.
-Furthermore, using the `dists` vector, we can get the Levenshtein distance of the query to the current word and know whether or not it is possible for a descendant node to match.
-So, not only are we efficiently computing the Levenshtein distance, but we only go down branches of the trie where some word could potentially match. 
+It's a depth first search of the trie. We associate to each node a vector `dists` such that `dist[i]` represents the Levenshtein distance between `query[:i]` and the word represented by the current node.
+By capping the maximum Levenshtein distance at `n`, this computation can be performed in `2*n+1` time by leveraging the parent node's `dists` vector.
+Furthermore, the `dists` vector allows for both (1) determining the Levenshtein distance between the query and the current word, and (2) checking whether or not descendants of the current node could potentially match.
+So we're both effieciently computing the Levenshtein distance and only exploring relevant branches of the trie.
 
 Full code:
 
@@ -52,12 +52,12 @@ class Trie:
         query = self.preprocess(query)
         matching_set, visited, stack = set(), set(), [self.root]
         while stack:
-            node = stack.pop()
+            node = stack.pop()  # Depth first search
             if node not in visited:
-                node.dists = self.get_levenshtein_dists(node, query, n)
-                if node.is_word and node.dists[-1] <= n:
+                node.dists = self.get_levenshtein_dists(node, query, n)  # node.dists[i] = min(distance(node.word, query[:i]), n + 1)
+                if node.is_word and node.dists[-1] <= n: # Check for a matching word
                     matching_set.add(node.word)
-                if min(node.dists) <= n:
+                if min(node.dists) <= n:  # Check whether to continue down the branch.
                     stack.extend(node.children.values())
         return matching_set
 
@@ -67,6 +67,8 @@ class Trie:
         dists = [n + 1] * (len(query) + 1)
         dists[0] = len(node.word)
         prev_dists = node.parent.dists
+        # node.parent.dists and node.dists are the two rows used in the classical Levenshtein distance algorithm
+        # It's not necessary to iterate over the full range(len(query)) since we're capping the Levenshtein distance at n
         for i in range(max(0, dists[0] - n - 1), min(len(query), dists[0] + n + 1)):
             dists[i + 1] = (
                 prev_dists[i]
