@@ -17,10 +17,16 @@ The code is shown below and in `simplesearch.py`. Unit tests are in `test.py`
 #### In some detail:
 
 At the core of this implementation is the algorithm for fuzzy searching the trie, which is a variation of the algorithm used to compute the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). 
-It's a depth first search of the trie. We associate to each node a vector `dists` such that `dist[i]` represents the Levenshtein distance between `query[:i]` and the word represented by the current node.
-By capping the maximum Levenshtein distance at `n`, this computation can be performed in `2*n+1` time by leveraging the parent node's `dists` vector.
-Furthermore, the `dists` vector allows for both (1) determining the Levenshtein distance between the query and the current word, and (2) checking whether or not descendants of the current node could potentially match.
-So we're both effieciently computing the Levenshtein distance and only exploring relevant branches of the trie.
+It's a depth first search of the trie:
+- At each node, we associate a vector `dists` such that `dist[i]` represents the Levenshtein distance between `query[:i]` and the word represented by the current node.
+- By capping the maximum Levenshtein distance at `n`, this computation can be performed with `2*n+1` time complexity using the parent node's `dists` vector.
+- Furthermore, the `dists` vector allows for both (1) determining the Levenshtein distance between the query and the current word, and (2) checking whether or not descendants of the current node could potentially match. So we're both effieciently computing the Levenshtein distance and only exploring relevant branches of the trie.
+
+Here's what the trie and the attached `dists` vectors might look like:
+
+<p align="center">
+<img src="trie-search-example.excalidraw.png" width=50%>
+</p>
 
 ## Full code:
 
