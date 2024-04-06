@@ -1,11 +1,20 @@
-# Simple Typo-Tolerant Search Engine Demo
+# 🔍 Simple Typo-Tolerant Search Engine Demo
 
-How many lines of code to implement a typo-tolerant search engine in Python, without any dependencies? 76!
+How many lines of code to implement a typo-tolerant search engine in Python, without any dependencies? 
 
-Here's how it works:
+**Only 76!**
+
+The code is shown below and in `simplesearch.py`. Unit tests are in `test.py`
+
+## How it works:
+
+#### Big picture:
+
 1. Tokenize documents.
 2. Create an [inverted index](https://en.wikipedia.org/wiki/Inverted_index) to quickly lookup documents from terms.
 3. Combine a [trie](https://en.wikipedia.org/wiki/Trie) with an adaptation of the usual Levenshtein distance algorithm for typo-tolerant search with optimal time complexity O(`#terms` x `max_levenshtein_distance`).
+
+#### In some detail:
 
 At the core of this implementation is the algorithm for fuzzy searching the trie, which is a variation of the algorithm used to compute the [Levenshtein distance](https://en.wikipedia.org/wiki/Levenshtein_distance). 
 It's a depth first search of the trie. We associate to each node a vector `dists` such that `dist[i]` represents the Levenshtein distance between `query[:i]` and the word represented by the current node.
@@ -13,7 +22,7 @@ By capping the maximum Levenshtein distance at `n`, this computation can be perf
 Furthermore, the `dists` vector allows for both (1) determining the Levenshtein distance between the query and the current word, and (2) checking whether or not descendants of the current node could potentially match.
 So we're both effieciently computing the Levenshtein distance and only exploring relevant branches of the trie.
 
-Full code:
+## Full code:
 
 ```python
 import string
@@ -96,7 +105,7 @@ class Index:
         }
 ```
 
-Example:
+## Example:
 
 ```python
 from simplesearch import Index
@@ -112,7 +121,13 @@ index.fuzzySearch("Willipedia", 2)
 ## {'Wikipedia is hosted by the Wikimedia Foundation, a non-profit organization that also hosts a range of other projects.'}
 ```
 
-Notes:
-- This isn't optimized for memory.
-- Obviously, it's not a very refined search engine. It's just time-complexity efficient single-term fuzzy search and corresponding document lookup. 
+## Notes:
 
+- This demo is only optimized for time complexity, not memory.
+- Obviously, it's not a very refined search engine. It's just efficient single-term fuzzy search and corresponding document lookup. 
+
+## Further reading:
+
+- http://blog.notdot.net/2010/07/Damn-Cool-Algorithms-Levenshtein-Automata
+- https://julesjacobs.com/2015/06/17/disqus-levenshtein-simple-and-fast.html
+- https://blog.mikemccandless.com/2011/03/lucenes-fuzzyquery-is-100-times-faster.html
